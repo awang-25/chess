@@ -214,13 +214,15 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
                         currPiece.changeType();
                         fromMoveSquare.removePiece();
                         if(isInCheck(whiteTurn)){
+                           // System.out.println("I'm in check");
                             fromMoveSquare.put(currPiece);
                             endSquare.removePiece();
                             if(takenPiece != null){
                                 endSquare.put(takenPiece);
                             }
+                        }else{
+                         whiteTurn = !whiteTurn;
                         }
-                        whiteTurn = !whiteTurn;
                     } //else {
                         //sq = fromMoveSquare;
                     //}
@@ -256,23 +258,19 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
     // can identify the king using the instanceof key word.
 
     public boolean isInCheck(boolean kingColor){
-        ArrayList<Piece> oppPieces = new ArrayList<Piece>(); 
         for(Square[] row : board){
             for(Square s : row){
                 if(s.getOccupyingPiece() != null && s.getOccupyingPiece().getColor() != kingColor){
-                    oppPieces.add(s.getOccupyingPiece());
+                    for(Square sq: s.getOccupyingPiece().getControlledSquares(board, s)){
+                        if(sq.getOccupyingPiece() != null && sq.getOccupyingPiece() instanceof King && sq.getOccupyingPiece().getColor()== kingColor){
+                            System.out.println("true");
+                            return true;
+                        }
+                }
                 }   
             }
         }
-        for(Piece p : oppPieces){
-            System.out.println(p);
-            for(Square s : p.getControlledSquares(board, sq)){
-                if(s.getOccupyingPiece() != null && s.getOccupyingPiece() instanceof King){
-                    System.out.println("true");
-                    return true;
-                }
-            }
-        }
+      
         System.out.println("false");
         return false;
     }
